@@ -1,13 +1,10 @@
 
 document.addEventListener('DOMContentLoaded', (event) => {
 
-
-
     const signInButton = document.getElementById('user-profile-btn');
     const modalOverlay = document.getElementById('signin-modal');
     const modalCloseButton = document.getElementById('modal-close-btn');
 
-    
     const modalEmailButton = modalOverlay.querySelector('.email-signup-button');
     const modalEmailInput = modalOverlay.querySelector('#modal-email-input');
     const modalSocialButtons = modalOverlay.querySelectorAll('.social-button');
