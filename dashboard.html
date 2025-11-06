@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ashesi Insider - Restaurants</title>
-    <!-- Link to the new external CSS file -->
-    <link rel="stylesheet" href="review-style.css" />
-    <!-- Simple icon font for search, notifications, user, etc. -->
+    <title>Ashesi Insider - Reviews</title>
+  
+    <link rel="stylesheet" href="dashboard.css" />
+  
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -17,10 +17,10 @@
       <div class="logo">Ashesi Insider</div>
       <nav>
         <ul>
-          <li><a href="#">Courses</a></li>
-          <li><a href="#" class="active">Restaurants</a></li>
-          <li><a href="#">Lecturers</a></li>
-          <li><a href="#">Hostels</a></li>
+          <li><a href="#" class="active">Courses</a></li>
+          <li><a href="restaurants.html">Restaurants</a></li>
+          <li><a href="lecturer.html">Lecturers</a></li>
+          <li><a href="hostels.html">Hostels</a></li>
         </ul>
       </nav>
       <div class="header-actions">
@@ -36,117 +36,107 @@
     </header>
 
     <main class="main-layout">
-      <!-- Main Feed Column -->
       <div class="main-feed">
         <div class="search-box">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" placeholder="Search for Restaurants or reviews" />
+          <input type="text" placeholder="Search for Courses or reviews" />
         </div>
         <div class="post-box">
           <i class="fa-solid fa-user-circle"></i>
-          <span>Post as "Diner"</span>
+          <span>Post as "Student"</span>
         </div>
 
-        <!-- Example Review Card 1 -->
         <div class="review-card">
           <div class="card-header">
-            <span class="course-code math"
-              ><i class="fa-solid fa-utensils"></i
-            ></span>
+            <span class="course-code cs">CS</span>
             <div class="card-title">
-              <h3>The Canteen</h3>
-              <p>On-Campus</p>
+              <h3>Computer Science 101</h3>
+              <p>Dr. Sarah Chen</p>
             </div>
             <span class="time">2h</span>
           </div>
-          <div class="rating-badge">4.0★</div>
-          <h4>Affordable and convenient!</h4>
+          <div class="rating-badge">4.5★</div>
+          <h4>Great introduction to programming!</h4>
           <p class="review-text">
-            A lifesaver for late-night studies. The fried rice is consistent and
-            affordable. It's not gourmet, but it's reliable and right on campus.
+            This course completely changed my perspective on computer science.
+            The professor was engaging, the assignments were challenging but
+            fair, and I learned so much about Python and algorithmic thinking.
+            The weekly labs really helped reinforce the concepts.
           </p>
           <div class="card-footer">
-            <div><i class="fa-solid fa-heart"></i> 102</div>
-            <div><i class="fa-solid fa-comment"></i> 45 Comments</div>
-            <span class="comment-bubble">20</span>
+            <div><i class="fa-solid fa-heart"></i> 42</div>
+            <div><i class="fa-solid fa-comment"></i> 18 Comments</div>
+            <span class="comment-bubble">12</span>
           </div>
         </div>
 
-        <!-- Example Review Card 2 -->
         <div class="review-card">
           <div class="card-header">
-            <span class="course-code math"
-              ><i class="fa-solid fa-utensils"></i
-            ></span>
+            <span class="course-code math">M</span>
             <div class="card-title">
-              <h3>Big Ben's Waakye</h3>
-              <p>Off-Campus (Opposite Main Gate)</p>
+              <h3>Calculus I</h3>
+              <p>Prof. Michael Rodriguez</p>
             </div>
             <span class="time">5h</span>
           </div>
-          <div class="rating-badge">4.8★</div>
-          <h4>Best waakye, but be ready to wait.</h4>
+          <div class="rating-badge">4.0★</div>
+          <h4>Challenging but rewarding</h4>
           <p class="review-text">
-            Honestly the best waakye around. The queue on Sunday mornings is
-            insane, but it's worth it. Just make sure you have at least 30
-            minutes to spare. The shito is 10/10.
+            The course material is difficult, but Professor Rodriguez breaks
+            down complex topics into understandable chunks. Office hours are
+            extremely helpful. The textbook is expensive but worth it. Be
+            prepared to spend a lot of time on homework, but you'll really
+            understand calculus by the end.
           </p>
           <div class="card-footer">
-            <div><i class="fa-solid fa-heart"></i> 189</div>
-            <div><i class="fa-solid fa-comment"></i> 76 Comments</div>
+            <div><i class="fa-solid fa-heart"></i> 28</div>
+            <div><i class="fa-solid fa-comment"></i> 11 Comments</div>
           </div>
         </div>
       </div>
 
-      <!-- Sidebar Column -->
+    
+      
       <aside class="sidebar">
         <div class="sidebar-card">
           <div class="sidebar-header">
-            <h3>Popular Restaurants</h3>
+            <h3>Popular Courses</h3>
             <a href="#">Explore all →</a>
           </div>
           <ul class="popular-list">
             <li>
-              <span class="course-code math"
-                ><i class="fa-solid fa-utensils"></i
-              ></span>
+              <span class="course-code cs">CS</span>
               <div class="course-info">
-                <strong>The Canteen</strong>
-                <small>On-Campus</small>
-                <small>1.2K reviews</small>
+                <strong>Computer Science 101</strong>
+                <small>Introduction to Programming</small>
+                <small>4.2K students</small>
               </div>
               <a href="#" class="view-btn">View</a>
             </li>
             <li>
-              <span class="course-code math"
-                ><i class="fa-solid fa-utensils"></i
-              ></span>
+              <span class="course-code math">MATH</span>
               <div class="course-info">
-                <strong>Big Ben's Waakye</strong>
-                <small>Off-Campus</small>
-                <small>800 reviews</small>
+                <strong>Calculus I</strong>
+                <small>Differential Calculus</small>
+                <small>3.8K students</small>
               </div>
               <a href="#" class="view-btn">View</a>
             </li>
             <li>
-              <span class="course-code math"
-                ><i class="fa-solid fa-utensils"></i
-              ></span>
+              <span class="course-code phy">PHY</span>
               <div class="course-info">
-                <strong>Mama's Kitchen</strong>
-                <small>Off-Campus</small>
-                <small>650 reviews</small>
+                <strong>Physics 201</strong>
+                <small>Classical Mechanics</small>
+                <small>2.1K students</small>
               </div>
               <a href="#" class="view-btn">View</a>
             </li>
             <li>
-              <span class="course-code math"
-                ><i class="fa-solid fa-utensils"></i
-              ></span>
+              <span class="course-code eng">ENG</span>
               <div class="course-info">
-                <strong>The Grill</strong>
-                <small>On-Campus</small>
-                <small>400 reviews</small>
+                <strong>English Literature</strong>
+                <small>Modern American Literature</small>
+                <small>1.9K students</small>
               </div>
               <a href="#" class="view-btn">View</a>
             </li>
@@ -155,7 +145,7 @@
       </aside>
     </main>
 
-    <!-- Sign In / Sign Up Modal -->
+
     <div class="modal-overlay" id="signin-modal">
       <div class="modal-box">
         <button class="modal-close-btn" id="modal-close-btn">&times;</button>
@@ -187,7 +177,6 @@
       </div>
     </div>
 
-    <!-- Link to the new external JavaScript file -->
-    <script src="review-script.js" defer></script>
+    <script src="dashboard.js" defer></script>
   </body>
 </html>

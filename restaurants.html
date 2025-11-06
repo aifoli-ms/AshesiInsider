@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ashesi Insider - Hostels</title>
-    <!-- Link to the new external CSS file -->
-    <link rel="stylesheet" href="review-style.css" />
-    <!-- Simple icon font for search, notifications, user, etc. -->
+    <title>Ashesi Insider - Restaurants</title>
+
+    <link rel="stylesheet" href="restaurant.css" />
+   
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -18,9 +18,9 @@
       <nav>
         <ul>
           <li><a href="#">Courses</a></li>
-          <li><a href="#">Restaurants</a></li>
+          <li><a href="#" class="active">Restaurants</a></li>
           <li><a href="#">Lecturers</a></li>
-          <li><a href="#" class="active">Hostels</a></li>
+          <li><a href="#">Hostels</a></li>
         </ul>
       </nav>
       <div class="header-actions">
@@ -36,63 +36,64 @@
     </header>
 
     <main class="main-layout">
-      <!-- Main Feed Column -->
+  
       <div class="main-feed">
         <div class="search-box">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" placeholder="Search for Hostels or reviews" />
+          <input type="text" placeholder="Search for Restaurants or reviews" />
         </div>
         <div class="post-box">
           <i class="fa-solid fa-user-circle"></i>
-          <span>Post as "Resident"</span>
+          <span>Post as "Diner"</span>
         </div>
 
-        <!-- Example Review Card 1 -->
+       
         <div class="review-card">
           <div class="card-header">
-            <span class="course-code phy"><i class="fa-solid fa-bed"></i></span>
+            <span class="course-code math"
+              ><i class="fa-solid fa-utensils"></i
+            ></span>
             <div class="card-title">
-              <h3>Hostel 1 (New Hostel)</h3>
+              <h3>The Canteen</h3>
               <p>On-Campus</p>
             </div>
-            <span class="time">3h</span>
+            <span class="time">2h</span>
           </div>
-          <div class="rating-badge">4.2★</div>
-          <h4>Great views, but can be noisy.</h4>
+          <div class="rating-badge">4.0★</div>
+          <h4>Affordable and convenient!</h4>
           <p class="review-text">
-            Living in the new hostel is convenient, and the rooms have great
-            views of the valley. It's very clean and modern. However, it's right
-            by the sports field, so it can get really loud during games or
-            events.
+            A lifesaver for late-night studies. The fried rice is consistent and
+            affordable. It's not gourmet, but it's reliable and right on campus.
           </p>
           <div class="card-footer">
-            <div><i class="fa-solid fa-heart"></i> 88</div>
-            <div><i class="fa-solid fa-comment"></i> 32 Comments</div>
-            <span class="comment-bubble">5</span>
+            <div><i class="fa-solid fa-heart"></i> 102</div>
+            <div><i class="fa-solid fa-comment"></i> 45 Comments</div>
+            <span class="comment-bubble">20</span>
           </div>
         </div>
 
-        <!-- Example Review Card 2 -->
+    
         <div class="review-card">
           <div class="card-header">
-            <span class="course-code phy"><i class="fa-solid fa-bed"></i></span>
+            <span class="course-code math"
+              ><i class="fa-solid fa-utensils"></i
+            ></span>
             <div class="card-title">
-              <h3>Danquah Hostel</h3>
-              <p>Off-Campus</p>
+              <h3>Big Ben's Waakye</h3>
+              <p>Off-Campus (Opposite Main Gate)</p>
             </div>
-            <span class="time">8h</span>
+            <span class="time">5h</span>
           </div>
-          <div class="rating-badge">3.8★</div>
-          <h4>Spacious rooms, but unreliable water.</h4>
+          <div class="rating-badge">4.8★</div>
+          <h4>Best waakye, but be ready to wait.</h4>
           <p class="review-text">
-            The rooms at Danquah are much larger than the on-campus options,
-            which is a huge plus. The shuttle service is pretty reliable. The
-            main issue is the water situation; it can be on and off without
-            warning.
+            Honestly the best waakye around. The queue on Sunday mornings is
+            insane, but it's worth it. Just make sure you have at least 30
+            minutes to spare. The shito is 10/10.
           </p>
           <div class="card-footer">
-            <div><i class="fa-solid fa-heart"></i> 120</div>
-            <div><i class="fa-solid fa-comment"></i> 55 Comments</div>
+            <div><i class="fa-solid fa-heart"></i> 189</div>
+            <div><i class="fa-solid fa-comment"></i> 76 Comments</div>
           </div>
         </div>
       </div>
@@ -101,51 +102,51 @@
       <aside class="sidebar">
         <div class="sidebar-card">
           <div class="sidebar-header">
-            <h3>Popular Hostels</h3>
+            <h3>Popular Restaurants</h3>
             <a href="#">Explore all →</a>
           </div>
           <ul class="popular-list">
             <li>
-              <span class="course-code phy"
-                ><i class="fa-solid fa-bed"></i
+              <span class="course-code math"
+                ><i class="fa-solid fa-utensils"></i
               ></span>
               <div class="course-info">
-                <strong>Hostel 1 (New Hostel)</strong>
-                <small>On-Campus</small>
-                <small>1.8K reviews</small>
-              </div>
-              <a href="#" class="view-btn">View</a>
-            </li>
-            <li>
-              <span class="course-code phy"
-                ><i class="fa-solid fa-bed"></i
-              ></span>
-              <div class="course-info">
-                <strong>Danquah Hostel</strong>
-                <small>Off-Campus</small>
-                <small>1.5K reviews</small>
-              </div>
-              <a href="#" class="view-btn">View</a>
-            </li>
-            <li>
-              <span class="course-code phy"
-                ><i class="fa-solid fa-bed"></i
-              ></span>
-              <div class="course-info">
-                <strong>Hostel 2 (Old Hostel)</strong>
+                <strong>The Canteen</strong>
                 <small>On-Campus</small>
                 <small>1.2K reviews</small>
               </div>
               <a href="#" class="view-btn">View</a>
             </li>
             <li>
-              <span class="course-code phy"
-                ><i class="fa-solid fa-bed"></i
+              <span class="course-code math"
+                ><i class="fa-solid fa-utensils"></i
               ></span>
               <div class="course-info">
-                <strong>Mandela Hostel</strong>
+                <strong>Big Ben's Waakye</strong>
                 <small>Off-Campus</small>
-                <small>900 reviews</small>
+                <small>800 reviews</small>
+              </div>
+              <a href="#" class="view-btn">View</a>
+            </li>
+            <li>
+              <span class="course-code math"
+                ><i class="fa-solid fa-utensils"></i
+              ></span>
+              <div class="course-info">
+                <strong>Mama's Kitchen</strong>
+                <small>Off-Campus</small>
+                <small>650 reviews</small>
+              </div>
+              <a href="#" class="view-btn">View</a>
+            </li>
+            <li>
+              <span class="course-code math"
+                ><i class="fa-solid fa-utensils"></i
+              ></span>
+              <div class="course-info">
+                <strong>The Grill</strong>
+                <small>On-Campus</small>
+                <small>400 reviews</small>
               </div>
               <a href="#" class="view-btn">View</a>
             </li>
@@ -187,6 +188,6 @@
     </div>
 
     <!-- Link to the new external JavaScript file -->
-    <script src="review-script.js" defer></script>
+    <script src="restaurant.js" defer></script>
   </body>
 </html>

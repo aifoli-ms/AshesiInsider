@@ -2,22 +2,19 @@
 document.addEventListener('DOMContentLoaded', (event) => {
 
     
-    const emailButton = document.querySelector('.email-signup-button');
-    if (emailButton) {
-        emailButton.addEventListener('click', function() {
-            const emailInput = document.querySelector('#email-input');
+    const emailButtons = document.querySelectorAll('.email-signup-button');
+    emailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const emailInput = this.previousElementSibling;
             const email = emailInput ? emailInput.value : '';
             
             if (email) {
-              
-                console.log('Continuing with email: ' + email);
-               
+                window.location.href = 'dashboard.html';
             } else {
-                console.log('Please enter your email.');
-         
+                alert('Please enter your email.');
             }
         });
-    }
+    });
 
    
     const socialButtons = document.querySelectorAll('.social-button');
