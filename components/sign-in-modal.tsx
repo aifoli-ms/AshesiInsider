@@ -7,9 +7,10 @@ import { supabase } from '@/lib/supabaseClient';
 
 interface SignInModalProps {
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-export default function SignInModal({ onClose }: SignInModalProps) {
+export default function SignInModal({ onClose, onSuccess }: SignInModalProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showSignUp, setShowSignUp] = useState(false);
@@ -34,7 +35,11 @@ export default function SignInModal({ onClose }: SignInModalProps) {
       setError(signInError.message);
       return;
     }
-    onClose();
+    if (onSuccess) {
+      onSuccess();
+    } else {
+      onClose();
+    }
   };
 
   if (showSignUp) {

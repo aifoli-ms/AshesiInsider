@@ -7,9 +7,11 @@ interface NavigationProps {
   currentPage: string;
   onNavigate: (page: string) => void;
   onSignIn: () => void;
+  isAuthed?: boolean;
+  onSignOut?: () => void;
 }
 
-export default function Navigation({ currentPage, onNavigate, onSignIn }: NavigationProps) {
+export default function Navigation({ currentPage, onNavigate, onSignIn, isAuthed, onSignOut }: NavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
@@ -55,10 +57,16 @@ export default function Navigation({ currentPage, onNavigate, onSignIn }: Naviga
           {/* Sign In Button */}
           <div className="flex items-center gap-4">
             <button
-              onClick={onSignIn}
+              onClick={() => {
+                if (isAuthed) {
+                  onSignOut?.();
+                } else {
+                  onSignIn();
+                }
+              }}
               className="hidden sm:block bg-black text-white px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition-opacity"
             >
-              Sign Up
+              {isAuthed ? 'Sign Out' : 'Sign Up'}
             </button>
 
             {/* Mobile Menu Toggle */}
@@ -94,12 +102,16 @@ export default function Navigation({ currentPage, onNavigate, onSignIn }: Naviga
             })}
             <button
               onClick={() => {
-                onSignIn();
+                if (isAuthed) {
+                  onSignOut?.();
+                } else {
+                  onSignIn();
+                }
                 setMobileMenuOpen(false);
               }}
               className="w-full mt-4 mx-4 bg-black text-white px-6 py-2 rounded-lg font-semibold"
             >
-              Sign Up
+              {isAuthed ? 'Sign Out' : 'Sign Up'}
             </button>
           </div>
         )}

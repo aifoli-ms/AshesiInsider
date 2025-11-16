@@ -199,7 +199,15 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 				</div>
 			</section>
 
-			{showSignIn && <SignInModal onClose={() => setShowSignIn(false)} />}
+			{showSignIn && (
+				<SignInModal
+					onClose={() => setShowSignIn(false)}
+					onSuccess={() => {
+						setShowSignIn(false);
+						onNavigate('courses');
+					}}
+				/>
+			)}
 		</main>
   );
 }
