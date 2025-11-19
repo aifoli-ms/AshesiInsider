@@ -2,14 +2,16 @@
 
 import { X } from 'lucide-react';
 import { useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { toast } from '@/hooks/use-toast';
 
 interface SignUpModalProps {
   onClose: () => void;
+  onSuccess?: (firstName: string) => void;
 }
 
-export default function SignUpModal({ onClose }: SignUpModalProps) {
-  const [fullName, setFullName] = useState('');
+export default function SignUpModal({ onClose, onSuccess }: SignUpModalProps) {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -26,25 +28,30 @@ export default function SignUpModal({ onClose }: SignUpModalProps) {
       return;
     }
     setLoading(true);
-    if (!supabase) {
-      setLoading(false);
-      setError('Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local.');
-      return;
-    }
-    const { error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: fullName },
-        emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
-      },
+    const res = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email,
+        password,
+        profileType: 'student',
+      }),
     });
     setLoading(false);
-    if (signUpError) {
-      setError(signUpError.message);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(data?.error ?? 'Could not create account');
       return;
     }
-    setMessage('Check your email to confirm your account.');
+    const safeFirst = firstName.trim();
+    toast({
+      title: `Welcome, ${safeFirst}!`,
+      description: 'Your account was created successfully.',
+    });
+    onSuccess?.(safeFirst);
+    onClose();
   };
 
   return (
@@ -71,18 +78,33 @@ export default function SignUpModal({ onClose }: SignUpModalProps) {
               {message}
             </div>
           )}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Full Name
-            </label>
-            <input
-              type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="Kwame Mensah"
-              className="w-full px-4 py-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder-muted-foreground"
-              required
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                First Name
+              </label>
+              <input
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="Kwame"
+                className="w-full px-4 py-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder-muted-foreground"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Last Name
+              </label>
+              <input
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Mensah"
+                className="w-full px-4 py-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder-muted-foreground"
+                required
+              />
+            </div>
           </div>
 
           <div>

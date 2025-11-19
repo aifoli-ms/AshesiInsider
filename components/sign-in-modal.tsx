@@ -3,7 +3,6 @@
 import { X } from 'lucide-react';
 import { useState } from 'react';
 import SignUpModal from './sign-up-modal';
-import { supabase } from '@/lib/supabaseClient';
 
 interface SignInModalProps {
   onClose: () => void;
@@ -21,18 +20,15 @@ export default function SignInModal({ onClose, onSuccess }: SignInModalProps) {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    if (!supabase) {
-      setLoading(false);
-      setError('Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local.');
-      return;
-    }
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
     });
     setLoading(false);
-    if (signInError) {
-      setError(signInError.message);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(data?.error ?? 'Login failed');
       return;
     }
     if (onSuccess) {
@@ -43,7 +39,18 @@ export default function SignInModal({ onClose, onSuccess }: SignInModalProps) {
   };
 
   if (showSignUp) {
-    return <SignUpModal onClose={onClose} />;
+    return (
+      <SignUpModal
+        onClose={onClose}
+        onSuccess={(_firstName) => {
+          if (onSuccess) {
+            onSuccess();
+          } else {
+            onClose();
+          }
+        }}
+      />
+    );
   }
 
   return (
@@ -102,22 +109,7 @@ export default function SignInModal({ onClose, onSuccess }: SignInModalProps) {
           </button>
         </form>
 
-        <button
-          type="button"
-          onClick={() => {
-            if (!supabase) {
-              setError('Supabase is not configured. Add env vars to .env.local.');
-              return;
-            }
-            supabase.auth.signInWithOAuth({
-              provider: 'google',
-              options: { redirectTo: typeof window !== 'undefined' ? window.location.origin : undefined },
-            });
-          }}
-          className="w-full mt-4 border border-border rounded-lg py-3 font-semibold hover:bg-accent/50 transition-colors"
-        >
-          Continue with Google
-        </button>
+        
 
         <p className="text-center text-muted-foreground text-sm mt-4">
           Don't have an account?{' '}

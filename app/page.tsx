@@ -8,7 +8,6 @@ import CoursesPage from '@/components/pages/courses-page';
 import RestaurantsPage from '@/components/pages/restaurants-page';
 import LecturersPage from '@/components/pages/lecturers-page';
 import HostelsPage from '@/components/pages/hostels-page';
-import { supabase } from '@/lib/supabaseClient';
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -17,29 +16,18 @@ export default function Home() {
   const [pendingPage, setPendingPage] = useState<string | null>(null);
 
   useEffect(() => {
-    // Show sign in on first load for demo
-    setShowSignIn(true);
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-    const init = async () => {
+    const loadSession = async () => {
       try {
-        if (!supabase) return;
-        const { data } = await supabase.auth.getSession();
-        if (mounted) setIsAuthed(!!data.session);
-        supabase.auth.onAuthStateChange((_event, session) => {
-          if (!mounted) return;
-          setIsAuthed(!!session);
-        });
+        const res = await fetch('/api/auth/session', { cache: 'no-store' });
+        const authed = res.ok;
+        setIsAuthed(authed);
+        setShowSignIn(!authed);
       } catch {
-        // ignore; safe fallback to unauthenticated
+        setIsAuthed(false);
+        setShowSignIn(true);
       }
     };
-    void init();
-    return () => {
-      mounted = false;
-    };
+    void loadSession();
   }, []);
 
   const protectedPages = new Set(['courses', 'restaurants', 'lecturers', 'hostels']);
@@ -79,10 +67,9 @@ export default function Home() {
         isAuthed={isAuthed}
         onSignOut={async () => {
           try {
-            if (supabase) {
-              await supabase.auth.signOut();
-            }
+            await fetch('/api/auth/logout', { method: 'POST' });
           } finally {
+            setIsAuthed(false);
             setCurrentPage('home');
           }
         }}
@@ -93,6 +80,7 @@ export default function Home() {
           onClose={() => setShowSignIn(false)}
           onSuccess={() => {
             setShowSignIn(false);
+            setIsAuthed(true);
             if (pendingPage) {
               setCurrentPage(pendingPage);
               setPendingPage(null);
