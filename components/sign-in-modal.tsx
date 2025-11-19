@@ -18,7 +18,7 @@ export default function SignInModal({ onClose, onSuccess }: SignInModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    // Placeholder auth (no backend). Implement your own later.
     setLoading(true);
     const res = await fetch('/api/auth/login', {
       method: 'POST',

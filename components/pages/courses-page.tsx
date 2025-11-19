@@ -3,76 +3,51 @@
 import ReviewCard from '../review-card';
 import RatingStars from '../rating-stars';
 import { Search, Plus } from 'lucide-react';
-
-const courseData = [
-  {
-    id: 1,
-    name: 'Data Structures & Algorithms',
-    code: 'CS 201',
-    rating: 4.2,
-    reviews: 28,
-    instructor: 'Dr. Kwame Asante',
-    semester: 'Fall 2024',
-    reviews_list: [
-      {
-        author: 'Ama Sarpong',
-        rating: 5,
-        title: 'Challenging but rewarding',
-        text: 'Great course that really helps you understand the foundations of CS. Dr. Asante is very knowledgeable and makes complex topics understandable.',
-        date: '2 weeks ago',
-        helpful: 24,
-      },
-      {
-        author: 'Kofi Mensah',
-        rating: 4,
-        title: 'Good content, heavy workload',
-        text: 'The assignments are quite demanding, but the course material is well-structured. Definitely brought my algorithms game up.',
-        date: '1 month ago',
-        helpful: 15,
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: 'African History & Culture',
-    code: 'HST 150',
-    rating: 4.7,
-    reviews: 42,
-    instructor: 'Prof. Ama Adjei',
-    semester: 'Fall 2024',
-    reviews_list: [
-      {
-        author: 'Nana Akosua',
-        rating: 5,
-        title: 'Absolutely fascinating!',
-        text: 'Prof. Adjei brings African history to life. Engaging lectures, thoughtful discussions, and really makes you think critically about our heritage.',
-        date: '3 weeks ago',
-        helpful: 31,
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: 'Business Analytics',
-    code: 'BUS 210',
-    rating: 3.8,
-    reviews: 19,
-    instructor: 'Dr. Samuel Boateng',
-    semester: 'Fall 2024',
-    reviews_list: [
-      {
-        author: 'Kojo Ansah',
-        rating: 4,
-        title: 'Practical skills for the real world',
-        text: 'Very practical course with real-world applications. Dr. Boateng knows his stuff, though the Excel work can be tedious.',
-        date: '1 month ago',
-        helpful: 12,
-      },
-    ],
-  },
-];
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function CoursesPage() {
+  const [courses, setCourses] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        if (!supabase) { setCourses([]); setLoading(false); return; }
+        const { data, error } = await supabase
+          .from('courses')
+          .select('id, name, code, instructor, semester, rating, reviews_count, course_reviews (author, rating, title, content, helpful, created_at)')
+          .order('id', { ascending: true });
+        if (error) { setCourses([]); setLoading(false); return; }
+        const mapped = (data || []).map((c: any) => ({
+          id: c.id,
+          name: c.name,
+          code: c.code,
+          rating: Number(c.rating ?? 0),
+          reviews: Number(c.reviews_count ?? 0),
+          instructor: c.instructor,
+          semester: c.semester,
+          reviews_list: (c.course_reviews || []).map((r: any) => ({
+            author: r.author ?? 'Anonymous',
+            rating: r.rating,
+            title: r.title,
+            text: r.content,
+            date: new Date(r.created_at).toDateString(),
+            helpful: r.helpful,
+          })),
+        }));
+        setCourses(mapped);
+        setLoading(false);
+      } catch {
+        setCourses([]);
+        setLoading(false);
+      }
+    };
+    void load();
+  }, []);
+
+  const courseData = courses ?? [];
+
   return (
     <main className="min-h-screen bg-background py-12">
       <div className="max-w-6xl mx-auto px-4">
@@ -98,9 +73,14 @@ export default function CoursesPage() {
           </div>
         </div>
 
-        {/* Courses Grid */}
+        {/* Loading / Empty / Courses Grid */}
+        {loading ? (
+          <div className="text-muted-foreground">Loading courses…</div>
+        ) : courseData.length === 0 ? (
+          <div className="text-muted-foreground">No courses found.</div>
+        ) : (
         <div className="space-y-8">
-          {courseData.map((course) => (
+          {courseData.map((course: any) => (
             <div key={course.id} className="bg-card rounded-2xl p-8 border border-border hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-6">
                 <div>
@@ -120,7 +100,7 @@ export default function CoursesPage() {
 
               {/* Reviews */}
               <div className="space-y-4">
-                {course.reviews_list.map((review, idx) => (
+                {course.reviews_list.map((review: any, idx: number) => (
                   <ReviewCard key={idx} {...review} />
                 ))}
               </div>
@@ -131,6 +111,7 @@ export default function CoursesPage() {
             </div>
           ))}
         </div>
+        )}
       </div>
     </main>
   );

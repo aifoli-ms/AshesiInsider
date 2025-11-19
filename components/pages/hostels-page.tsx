@@ -3,68 +3,50 @@
 import ReviewCard from '../review-card';
 import RatingStars from '../rating-stars';
 import { Search, Plus, MapPin, Users } from 'lucide-react';
-
-const hostelData = [
-  {
-    id: 1,
-    name: 'Unity Hostel',
-    location: 'East Campus',
-    rating: 4.6,
-    reviews: 28,
-    capacity: '120 students',
-    amenities: 'WiFi, Gym, Kitchen, Common Room',
-    reviews_list: [
-      {
-        author: 'Grace Adeyemi',
-        rating: 5,
-        title: 'Great community vibes',
-        text: 'Unity Hostel has an amazing sense of community. The rooms are spacious, the management is responsive, and the common areas are perfect for hanging out.',
-        date: '3 weeks ago',
-        helpful: 31,
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Harmony Heights',
-    location: 'West Campus',
-    rating: 4.1,
-    reviews: 19,
-    capacity: '85 students',
-    amenities: 'WiFi, Common Room, Laundry',
-    reviews_list: [
-      {
-        author: 'Kwesi Obimpeh',
-        rating: 4,
-        title: 'Good value for money',
-        text: 'Decent hostel with reasonable rates. The facilities could use some updating, but overall it\'s a comfortable place to stay while studying here.',
-        date: '1 month ago',
-        helpful: 16,
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: 'Sunrise Residence',
-    location: 'North Campus',
-    rating: 4.3,
-    reviews: 35,
-    capacity: '100 students',
-    amenities: 'WiFi, Gym, Study Room, Cafeteria',
-    reviews_list: [
-      {
-        author: 'Priscilla Mensah',
-        rating: 5,
-        title: 'Best place to live on campus',
-        text: 'Sunrise Residence is top-notch. Clean rooms, excellent maintenance staff, and the cafeteria has great food. Highly recommend!',
-        date: '5 days ago',
-        helpful: 22,
-      },
-    ],
-  },
-];
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function HostelsPage() {
+  const [hostels, setHostels] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        if (!supabase) { setHostels([]); setLoading(false); return; }
+        const { data, error } = await supabase
+          .from('hostels')
+          .select('id, name, location, price_range, rating, reviews_count, hostel_reviews (author, rating, title, content, helpful, created_at)')
+          .order('id', { ascending: true });
+        if (error) { setHostels([]); setLoading(false); return; }
+        const mapped = (data || []).map((h: any) => ({
+          id: h.id,
+          name: h.name,
+          location: h.location,
+          price_range: h.price_range,
+          rating: Number(h.rating ?? 0),
+          reviews: Number(h.reviews_count ?? 0),
+          reviews_list: (h.hostel_reviews || []).map((r: any) => ({
+            author: r.author ?? 'Anonymous',
+            rating: r.rating,
+            title: r.title,
+            text: r.content,
+            date: new Date(r.created_at).toDateString(),
+            helpful: r.helpful,
+          })),
+        }));
+        setHostels(mapped);
+        setLoading(false);
+      } catch {
+        setHostels([]);
+        setLoading(false);
+      }
+    };
+    void load();
+  }, []);
+
+  const hostelData = hostels ?? [];
+
   return (
     <main className="min-h-screen bg-background py-12">
       <div className="max-w-6xl mx-auto px-4">
@@ -90,9 +72,14 @@ export default function HostelsPage() {
           </div>
         </div>
 
-        {/* Hostels Grid */}
+        {/* Loading / Empty / Hostels Grid */}
+        {loading ? (
+          <div className="text-muted-foreground">Loading hostels…</div>
+        ) : hostelData.length === 0 ? (
+          <div className="text-muted-foreground">No hostels found.</div>
+        ) : (
         <div className="space-y-8">
-          {hostelData.map((hostel) => (
+          {hostelData.map((hostel: any) => (
             <div key={hostel.id} className="bg-card rounded-2xl p-8 border border-border hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-6">
                 <div>
@@ -104,9 +91,8 @@ export default function HostelsPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Users size={16} />
-                      {hostel.capacity}
+                      Price: {hostel.price_range ?? 'N/A'}
                     </div>
-                    <p className="text-sm">Amenities: {hostel.amenities}</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -117,7 +103,7 @@ export default function HostelsPage() {
 
               {/* Reviews */}
               <div className="space-y-4">
-                {hostel.reviews_list.map((review, idx) => (
+                {hostel.reviews_list.map((review: any, idx: number) => (
                   <ReviewCard key={idx} {...review} />
                 ))}
               </div>
@@ -128,6 +114,7 @@ export default function HostelsPage() {
             </div>
           ))}
         </div>
+        )}
       </div>
     </main>
   );

@@ -3,65 +3,49 @@
 import ReviewCard from '../review-card';
 import RatingStars from '../rating-stars';
 import { Search, Plus } from 'lucide-react';
-
-const lecturerData = [
-  {
-    id: 1,
-    name: 'Dr. Kwame Asante',
-    department: 'Computer Science',
-    rating: 4.4,
-    reviews: 33,
-    courses: 'Data Structures, Algorithms, OOP',
-    reviews_list: [
-      {
-        author: 'Benjamin Osei',
-        rating: 5,
-        title: 'Makes complex topics simple',
-        text: 'Dr. Asante has an amazing ability to break down complex concepts. His examples are relatable and his office hours are genuinely helpful.',
-        date: '2 weeks ago',
-        helpful: 27,
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Prof. Ama Adjei',
-    department: 'History',
-    rating: 4.8,
-    reviews: 51,
-    courses: 'African History, World History',
-    reviews_list: [
-      {
-        author: 'Esi Owusu',
-        rating: 5,
-        title: 'The best lecturer on campus',
-        text: 'Prof. Adjei is passionate about her subject and it shows in every class. Engaging, fair grading, and truly cares about student learning.',
-        date: '1 week ago',
-        helpful: 38,
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: 'Mr. Samuel Boateng',
-    department: 'Business',
-    rating: 3.7,
-    reviews: 22,
-    courses: 'Business Analytics, Marketing',
-    reviews_list: [
-      {
-        author: 'Nii Armah',
-        rating: 4,
-        title: 'Knowledgeable but demanding',
-        text: 'Mr. Boateng knows business inside and out, but expects a lot from students. The course is challenging but definitely worth taking.',
-        date: '3 weeks ago',
-        helpful: 14,
-      },
-    ],
-  },
-];
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function LecturersPage() {
+  const [lecturers, setLecturers] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        if (!supabase) { setLecturers([]); setLoading(false); return; }
+        const { data, error } = await supabase
+          .from('lecturers')
+          .select('id, name, department, courses, rating, reviews_count, lecturer_reviews (author, rating, title, content, helpful, created_at)')
+          .order('id', { ascending: true });
+        if (error) { setLecturers([]); setLoading(false); return; }
+        const mapped = (data || []).map((l: any) => ({
+          id: l.id,
+          name: l.name,
+          department: l.department,
+          courses: l.courses,
+          rating: Number(l.rating ?? 0),
+          reviews: Number(l.reviews_count ?? 0),
+          reviews_list: (l.lecturer_reviews || []).map((r: any) => ({
+            author: r.author ?? 'Anonymous',
+            rating: r.rating,
+            title: r.title,
+            text: r.content,
+            date: new Date(r.created_at).toDateString(),
+            helpful: r.helpful,
+          })),
+        }));
+        setLecturers(mapped);
+        setLoading(false);
+      } catch {
+        setLecturers([]);
+        setLoading(false);
+      }
+    };
+    void load();
+  }, []);
+
+  const lecturerData = lecturers ?? [];
   return (
     <main className="min-h-screen bg-background py-12">
       <div className="max-w-6xl mx-auto px-4">
@@ -88,8 +72,13 @@ export default function LecturersPage() {
         </div>
 
         {/* Lecturers Grid */}
+        {loading ? (
+          <div className="text-muted-foreground">Loading lecturers…</div>
+        ) : lecturerData.length === 0 ? (
+          <div className="text-muted-foreground">No lecturers found.</div>
+        ) : (
         <div className="space-y-8">
-          {lecturerData.map((lecturer) => (
+          {lecturerData.map((lecturer: any) => (
             <div key={lecturer.id} className="bg-card rounded-2xl p-8 border border-border hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-6">
                 <div>
@@ -123,6 +112,7 @@ export default function LecturersPage() {
             </div>
           ))}
         </div>
+        )}
       </div>
     </main>
   );

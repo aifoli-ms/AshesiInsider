@@ -3,68 +3,50 @@
 import ReviewCard from '../review-card';
 import RatingStars from '../rating-stars';
 import { Search, Plus, MapPin, Clock } from 'lucide-react';
-
-const restaurantData = [
-  {
-    id: 1,
-    name: 'The Chill Spot',
-    location: 'Campus Gate',
-    rating: 4.5,
-    reviews: 56,
-    cuisine: 'Ghanaian & Continental',
-    hours: '7am - 10pm',
-    reviews_list: [
-      {
-        author: 'Abigail Aboagye',
-        rating: 5,
-        title: 'Best jollof on campus!',
-        text: 'Their jollof rice is absolutely incredible. Great service, fair prices, and the atmosphere is perfect for hanging with friends.',
-        date: '1 week ago',
-        helpful: 42,
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Campus Café',
-    location: 'Student Center',
-    rating: 3.9,
-    reviews: 38,
-    cuisine: 'Coffee & Pastries',
-    hours: '6am - 8pm',
-    reviews_list: [
-      {
-        author: 'Yaw Boadu',
-        rating: 4,
-        title: 'Perfect for studying',
-        text: 'Great coffee and a quiet study environment. WiFi is reliable too. A bit pricey for students but worth it sometimes.',
-        date: '2 weeks ago',
-        helpful: 28,
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: 'Grillhouse Express',
-    location: 'Main Street',
-    rating: 4.3,
-    reviews: 45,
-    cuisine: 'Grilled Meats',
-    hours: '11am - 11pm',
-    reviews_list: [
-      {
-        author: 'Akweley Mensah',
-        rating: 5,
-        title: 'Suya night vibes!',
-        text: 'Best place to grab suya after evening classes. The meat is always fresh and seasoned perfectly. Highly recommended!',
-        date: '3 days ago',
-        helpful: 19,
-      },
-    ],
-  },
-];
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function RestaurantsPage() {
+  const [restaurants, setRestaurants] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        if (!supabase) { setRestaurants([]); setLoading(false); return; }
+        const { data, error } = await supabase
+          .from('restaurants')
+          .select('id, name, location, cuisine, hours, rating, reviews_count, restaurant_reviews (author, rating, title, content, helpful, created_at)')
+          .order('id', { ascending: true });
+        if (error) { setRestaurants([]); setLoading(false); return; }
+        const mapped = (data || []).map((r: any) => ({
+          id: r.id,
+          name: r.name,
+          location: r.location,
+          cuisine: r.cuisine,
+          hours: r.hours,
+          rating: Number(r.rating ?? 0),
+          reviews: Number(r.reviews_count ?? 0),
+          reviews_list: (r.restaurant_reviews || []).map((rev: any) => ({
+            author: rev.author ?? 'Anonymous',
+            rating: rev.rating,
+            title: rev.title,
+            text: rev.content,
+            date: new Date(rev.created_at).toDateString(),
+            helpful: rev.helpful,
+          })),
+        }));
+        setRestaurants(mapped);
+        setLoading(false);
+      } catch {
+        setRestaurants([]);
+        setLoading(false);
+      }
+    };
+    void load();
+  }, []);
+
+  const restaurantData = restaurants ?? [];
   return (
     <main className="min-h-screen bg-background py-12">
       <div className="max-w-6xl mx-auto px-4">
@@ -91,8 +73,13 @@ export default function RestaurantsPage() {
         </div>
 
         {/* Restaurants Grid */}
+        {loading ? (
+          <div className="text-muted-foreground">Loading restaurants…</div>
+        ) : restaurantData.length === 0 ? (
+          <div className="text-muted-foreground">No restaurants found.</div>
+        ) : (
         <div className="space-y-8">
-          {restaurantData.map((restaurant) => (
+          {restaurantData.map((restaurant: any) => (
             <div key={restaurant.id} className="bg-card rounded-2xl p-8 border border-border hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-6">
                 <div>
@@ -128,6 +115,7 @@ export default function RestaurantsPage() {
             </div>
           ))}
         </div>
+        )}
       </div>
     </main>
   );
