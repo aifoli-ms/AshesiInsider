@@ -125,6 +125,11 @@ export default function AddReviewPage({ reviewType, onNavigate, onCancel }: AddR
 
       // Insert review (triggers will automatically update aggregates)
       // Note: user_id is left as null since we're using custom auth, not Supabase Auth
+      if (!supabase) {
+        alert('Database connection not available. Please try again later.');
+        return;
+      }
+
       const { error: reviewError } = await supabase
         .from(reviewTable)
         .insert({
