@@ -8,12 +8,14 @@ import CoursesPage from '@/components/pages/courses-page';
 import RestaurantsPage from '@/components/pages/restaurants-page';
 import LecturersPage from '@/components/pages/lecturers-page';
 import HostelsPage from '@/components/pages/hostels-page';
+import AddReviewPage from '@/components/pages/add-review-page';
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState('home');
   const [showSignIn, setShowSignIn] = useState(false);
   const [isAuthed, setIsAuthed] = useState(false);
   const [pendingPage, setPendingPage] = useState<string | null>(null);
+  const [reviewType, setReviewType] = useState<'courses' | 'restaurants' | 'lecturers' | 'hostels'>('courses');
 
   useEffect(() => {
     const loadSession = async () => {
@@ -33,6 +35,17 @@ export default function Home() {
   const protectedPages = new Set(['courses', 'restaurants', 'lecturers', 'hostels']);
 
   const handleNavigate = (page: string) => {
+    if (page.startsWith('add-review-')) {
+      const type = page.replace('add-review-', '') as 'courses' | 'restaurants' | 'lecturers' | 'hostels';
+      if (!isAuthed) {
+        setPendingPage(page);
+        setShowSignIn(true);
+        return;
+      }
+      setReviewType(type);
+      setCurrentPage('add-review');
+      return;
+    }
     if (protectedPages.has(page) && !isAuthed) {
       setPendingPage(page);
       setShowSignIn(true);
@@ -46,13 +59,21 @@ export default function Home() {
       case 'home':
         return <HomePage onNavigate={handleNavigate} />;
       case 'courses':
-        return <CoursesPage />;
+        return <CoursesPage onNavigate={handleNavigate} />;
       case 'restaurants':
-        return <RestaurantsPage />;
+        return <RestaurantsPage onNavigate={handleNavigate} />;
       case 'lecturers':
-        return <LecturersPage />;
+        return <LecturersPage onNavigate={handleNavigate} />;
       case 'hostels':
-        return <HostelsPage />;
+        return <HostelsPage onNavigate={handleNavigate} />;
+      case 'add-review':
+        return (
+          <AddReviewPage
+            reviewType={reviewType}
+            onNavigate={handleNavigate}
+            onCancel={() => handleNavigate(reviewType)}
+          />
+        );
       default:
         return <HomePage onNavigate={handleNavigate} />;
     }
@@ -82,7 +103,13 @@ export default function Home() {
             setShowSignIn(false);
             setIsAuthed(true);
             if (pendingPage) {
-              setCurrentPage(pendingPage);
+              if (pendingPage.startsWith('add-review-')) {
+                const type = pendingPage.replace('add-review-', '') as 'courses' | 'restaurants' | 'lecturers' | 'hostels';
+                setReviewType(type);
+                setCurrentPage('add-review');
+              } else {
+                setCurrentPage(pendingPage);
+              }
               setPendingPage(null);
             } else {
               setCurrentPage('courses');

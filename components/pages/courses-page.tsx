@@ -6,7 +6,11 @@ import { Search, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
-export default function CoursesPage() {
+interface CoursesPageProps {
+  onNavigate?: (page: string) => void;
+}
+
+export default function CoursesPage({ onNavigate }: CoursesPageProps) {
   const [courses, setCourses] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -66,7 +70,10 @@ export default function CoursesPage() {
                 className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder-muted-foreground"
               />
             </div>
-            <button className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
+            <button 
+              onClick={() => onNavigate?.('add-review-courses')}
+              className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
+            >
               <Plus size={20} />
               Add Review
             </button>
