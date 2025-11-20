@@ -5,6 +5,7 @@ import RatingStars from '../rating-stars';
 import { Search, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { Slider } from '@/components/ui/slider';
 
 interface LecturersPageProps {
   onNavigate?: (page: string) => void;
@@ -14,6 +15,7 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
   const [lecturers, setLecturers] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [ratingFilter, setRatingFilter] = useState(0);
 
   useEffect(() => {
     const load = async () => {
@@ -54,13 +56,19 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
   
   // Filter lecturers based on search query
   const lecturerData = allLecturers.filter((lecturer) => {
-    if (!searchQuery.trim()) return true;
-    const query = searchQuery.toLowerCase();
-    return (
-      lecturer.name.toLowerCase().includes(query) ||
-      lecturer.department?.toLowerCase().includes(query) ||
-      lecturer.courses?.toLowerCase().includes(query)
-    );
+    const matchesSearch = (() => {
+      if (!searchQuery.trim()) return true;
+      const query = searchQuery.toLowerCase();
+      return (
+        lecturer.name.toLowerCase().includes(query) ||
+        lecturer.department?.toLowerCase().includes(query) ||
+        lecturer.courses?.toLowerCase().includes(query)
+      );
+    })();
+
+    const matchesRating = lecturer.rating >= ratingFilter;
+
+    return matchesSearch && matchesRating;
   });
   return (
     <main className="min-h-screen bg-background py-12">
@@ -71,24 +79,45 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
           <p className="text-lg text-muted-foreground mb-8">Rate and review your favorite lecturers</p>
 
           {/* Search Bar */}
-          <div className="flex gap-3">
-            <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
-              <input
-                type="text"
-                placeholder="Search lecturers..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder-muted-foreground"
-              />
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-3">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                <input
+                  type="text"
+                  placeholder="Search lecturers..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder-muted-foreground"
+                />
+              </div>
+              <button 
+                onClick={() => onNavigate?.('add-review-lecturers')}
+                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
+              >
+                <Plus size={20} />
+                Add Review
+              </button>
             </div>
-            <button 
-              onClick={() => onNavigate?.('add-review-lecturers')}
-              className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
-            >
-              <Plus size={20} />
-              Add Review
-            </button>
+
+            <div className="bg-card border border-border rounded-lg p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-semibold text-muted-foreground">Minimum Rating</span>
+                <span className="text-lg font-bold text-secondary">{ratingFilter.toFixed(1)}+</span>
+              </div>
+              <Slider
+                min={0}
+                max={5}
+                step={0.5}
+                value={[ratingFilter]}
+                onValueChange={(value) => setRatingFilter(value[0] ?? 0)}
+                aria-label="Minimum rating filter"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                <span>0</span>
+                <span>5</span>
+              </div>
+            </div>
           </div>
         </div>
 
