@@ -13,6 +13,7 @@ interface CoursesPageProps {
 export default function CoursesPage({ onNavigate }: CoursesPageProps) {
   const [courses, setCourses] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const load = async () => {
@@ -50,7 +51,19 @@ export default function CoursesPage({ onNavigate }: CoursesPageProps) {
     void load();
   }, []);
 
-  const courseData = courses ?? [];
+  const allCourses = courses ?? [];
+  
+  // Filter courses based on search query
+  const courseData = allCourses.filter((course) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      course.name.toLowerCase().includes(query) ||
+      course.code.toLowerCase().includes(query) ||
+      course.instructor?.toLowerCase().includes(query) ||
+      course.semester?.toLowerCase().includes(query)
+    );
+  });
 
   return (
     <main className="min-h-screen bg-background py-12">
@@ -67,6 +80,8 @@ export default function CoursesPage({ onNavigate }: CoursesPageProps) {
               <input
                 type="text"
                 placeholder="Search courses..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder-muted-foreground"
               />
             </div>

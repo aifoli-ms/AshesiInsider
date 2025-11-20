@@ -13,6 +13,7 @@ interface RestaurantsPageProps {
 export default function RestaurantsPage({ onNavigate }: RestaurantsPageProps) {
   const [restaurants, setRestaurants] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const load = async () => {
@@ -50,7 +51,18 @@ export default function RestaurantsPage({ onNavigate }: RestaurantsPageProps) {
     void load();
   }, []);
 
-  const restaurantData = restaurants ?? [];
+  const allRestaurants = restaurants ?? [];
+  
+  // Filter restaurants based on search query
+  const restaurantData = allRestaurants.filter((restaurant) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      restaurant.name.toLowerCase().includes(query) ||
+      restaurant.location?.toLowerCase().includes(query) ||
+      restaurant.cuisine?.toLowerCase().includes(query)
+    );
+  });
   return (
     <main className="min-h-screen bg-background py-12">
       <div className="max-w-6xl mx-auto px-4">
@@ -66,6 +78,8 @@ export default function RestaurantsPage({ onNavigate }: RestaurantsPageProps) {
               <input
                 type="text"
                 placeholder="Search restaurants..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder-muted-foreground"
               />
             </div>

@@ -13,6 +13,7 @@ interface HostelsPageProps {
 export default function HostelsPage({ onNavigate }: HostelsPageProps) {
   const [hostels, setHostels] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const load = async () => {
@@ -49,7 +50,18 @@ export default function HostelsPage({ onNavigate }: HostelsPageProps) {
     void load();
   }, []);
 
-  const hostelData = hostels ?? [];
+  const allHostels = hostels ?? [];
+  
+  // Filter hostels based on search query
+  const hostelData = allHostels.filter((hostel) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      hostel.name.toLowerCase().includes(query) ||
+      hostel.location?.toLowerCase().includes(query) ||
+      hostel.price_range?.toLowerCase().includes(query)
+    );
+  });
 
   return (
     <main className="min-h-screen bg-background py-12">
@@ -66,6 +78,8 @@ export default function HostelsPage({ onNavigate }: HostelsPageProps) {
               <input
                 type="text"
                 placeholder="Search hostels..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder-muted-foreground"
               />
             </div>

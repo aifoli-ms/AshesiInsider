@@ -13,6 +13,7 @@ interface LecturersPageProps {
 export default function LecturersPage({ onNavigate }: LecturersPageProps) {
   const [lecturers, setLecturers] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const load = async () => {
@@ -49,7 +50,18 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
     void load();
   }, []);
 
-  const lecturerData = lecturers ?? [];
+  const allLecturers = lecturers ?? [];
+  
+  // Filter lecturers based on search query
+  const lecturerData = allLecturers.filter((lecturer) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      lecturer.name.toLowerCase().includes(query) ||
+      lecturer.department?.toLowerCase().includes(query) ||
+      lecturer.courses?.toLowerCase().includes(query)
+    );
+  });
   return (
     <main className="min-h-screen bg-background py-12">
       <div className="max-w-6xl mx-auto px-4">
@@ -65,6 +77,8 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
               <input
                 type="text"
                 placeholder="Search lecturers..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder-muted-foreground"
               />
             </div>
