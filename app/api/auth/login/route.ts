@@ -4,12 +4,24 @@ import { supabaseServer } from '@/lib/supabaseServer'
 import { createSessionToken, ONE_WEEK_SECONDS } from '@/lib/session'
 import { SESSION_COOKIE } from '@/lib/session'
 import { validateEmail } from '@/lib/validation'
+import { RateLimiter } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for') ?? '127.0.0.1'
+    const { blocked, remaining, resetTime } = RateLimiter.check(ip)
+
+    if (blocked) {
+      const resetDate = resetTime ? new Date(resetTime) : new Date()
+      return NextResponse.json(
+        { error: `Too many attempts. Please try again after ${resetDate.toLocaleTimeString()}` },
+        { status: 429 }
+      )
+    }
+
     const body = await req.json().catch(() => ({}))
     const emailInput = (body.email ?? '').toLowerCase().trim()
     const password = body.password ?? ''
@@ -54,6 +66,7 @@ export async function POST(req: NextRequest) {
         path: '/',
         maxAge: ONE_WEEK_SECONDS,
       })
+      RateLimiter.reset(ip)
       return res
     }
 
@@ -69,6 +82,7 @@ export async function POST(req: NextRequest) {
 
     const rows = Array.isArray(data) ? data : []
     if (rows.length === 0) {
+      RateLimiter.increment(ip)
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 })
     }
 
@@ -93,6 +107,7 @@ export async function POST(req: NextRequest) {
       path: '/',
       maxAge: ONE_WEEK_SECONDS,
     })
+    RateLimiter.reset(ip)
     return res
   } catch (err: any) {
     return NextResponse.json({ error: err?.message ?? 'Internal server error' }, { status: 500 })
