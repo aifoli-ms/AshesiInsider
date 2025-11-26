@@ -2,17 +2,20 @@
 
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface NavigationProps {
   currentPage: string;
   onNavigate: (page: string) => void;
   onSignIn: () => void;
   isAuthed?: boolean;
+  isAdmin?: boolean;
   onSignOut?: () => void;
 }
 
-export default function Navigation({ currentPage, onNavigate, onSignIn, isAuthed, onSignOut }: NavigationProps) {
+export default function Navigation({ currentPage, onNavigate, onSignIn, isAuthed, isAdmin, onSignOut }: NavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const router = useRouter();
 
   const navItems = [
     { id: 'courses', label: 'Courses' },
@@ -36,22 +39,32 @@ export default function Navigation({ currentPage, onNavigate, onSignIn, isAuthed
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
             {navItems.map((item) => {
-              
+
               return (
                 <button
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
-									className={`relative flex items-center gap-2 px-3 py-2 transition-colors border-b-2 ${
-										currentPage === item.id
-											? 'text-black border-red-500'
-											: 'text-black border-transparent hover:border-red-200'
-									}`}
+                  className={`relative flex items-center gap-2 px-3 py-2 transition-colors border-b-2 ${currentPage === item.id
+                    ? 'text-black border-red-500'
+                    : 'text-black border-transparent hover:border-red-200'
+                    }`}
                 >
-                 
+
                   <span className="font-medium">{item.label}</span>
                 </button>
               );
             })}
+            {isAdmin && (
+              <button
+                onClick={() => router.push('/admin')}
+                className={`relative flex items-center gap-2 px-3 py-2 transition-colors border-b-2 ${currentPage === 'admin'
+                  ? 'text-black border-red-500'
+                  : 'text-black border-transparent hover:border-red-200'
+                  }`}
+              >
+                <span className="font-medium">Admin</span>
+              </button>
+            )}
           </div>
 
           {/* Sign In Button */}
@@ -90,16 +103,29 @@ export default function Navigation({ currentPage, onNavigate, onSignIn, isAuthed
                     onNavigate(item.id);
                     setMobileMenuOpen(false);
                   }}
-                  className={`w-full flex items-center px-4 py-3 transition-colors ${
-                    currentPage === item.id
-                      ? 'bg-primary text-primary-foreground'
-                      : 'hover:bg-opacity-80'
-                  }`}
+                  className={`w-full flex items-center px-4 py-3 transition-colors ${currentPage === item.id
+                    ? 'bg-primary text-primary-foreground'
+                    : 'hover:bg-opacity-80'
+                    }`}
                 >
                   <span className="font-medium">{item.label}</span>
                 </button>
               );
             })}
+            {isAdmin && (
+              <button
+                onClick={() => {
+                  router.push('/admin');
+                  setMobileMenuOpen(false);
+                }}
+                className={`w-full flex items-center px-4 py-3 transition-colors ${currentPage === 'admin'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'hover:bg-opacity-80'
+                  }`}
+              >
+                <span className="font-medium">Admin</span>
+              </button>
+            )}
             <button
               onClick={() => {
                 if (isAuthed) {

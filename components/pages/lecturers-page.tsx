@@ -16,6 +16,14 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [ratingFilter, setRatingFilter] = useState(0);
+  const [expandedLecturers, setExpandedLecturers] = useState<Record<number, boolean>>({});
+
+  const toggleReviews = (lecturerId: number) => {
+    setExpandedLecturers((prev) => ({
+      ...prev,
+      [lecturerId]: !prev[lecturerId],
+    }));
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -53,7 +61,7 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
   }, []);
 
   const allLecturers = lecturers ?? [];
-  
+
   // Filter lecturers based on search query
   const lecturerData = allLecturers.filter((lecturer) => {
     const matchesSearch = (() => {
@@ -91,7 +99,7 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
                   className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder-muted-foreground"
                 />
               </div>
-              <button 
+              <button
                 onClick={() => onNavigate?.('add-review-lecturers')}
                 className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
               >
@@ -127,41 +135,48 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
         ) : lecturerData.length === 0 ? (
           <div className="text-muted-foreground">No lecturers found.</div>
         ) : (
-        <div className="space-y-8">
-          {lecturerData.map((lecturer: any) => (
-            <div key={lecturer.id} className="bg-card rounded-2xl p-8 border border-border hover:shadow-lg transition-shadow">
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-14 h-14 bg-secondary text-secondary-foreground rounded-full flex items-center justify-center font-bold text-lg">
-                      {lecturer.name.charAt(0)}
+          <div className="space-y-8">
+            {lecturerData.map((lecturer: any) => (
+              <div key={lecturer.id} className="bg-card rounded-2xl p-8 border border-border hover:shadow-lg transition-shadow">
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-14 h-14 bg-secondary text-secondary-foreground rounded-full flex items-center justify-center font-bold text-lg">
+                        {lecturer.name.charAt(0)}
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold text-card-foreground">{lecturer.name}</h2>
+                        <p className="text-muted-foreground text-sm">{lecturer.department}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-card-foreground">{lecturer.name}</h2>
-                      <p className="text-muted-foreground text-sm">{lecturer.department}</p>
-                    </div>
+                    <p className="text-muted-foreground mt-3">Teaches: {lecturer.courses}</p>
                   </div>
-                  <p className="text-muted-foreground mt-3">Teaches: {lecturer.courses}</p>
+                  <div className="text-right">
+                    <div className="text-3xl font-black text-secondary mb-1">{lecturer.rating}</div>
+                    <RatingStars rating={lecturer.rating} count={lecturer.reviews} />
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-3xl font-black text-secondary mb-1">{lecturer.rating}</div>
-                  <RatingStars rating={lecturer.rating} count={lecturer.reviews} />
+
+                {/* Reviews */}
+                <div className="space-y-4">
+                  {(expandedLecturers[lecturer.id] ? lecturer.reviews_list : lecturer.reviews_list.slice(0, 3)).map((review: any, idx: number) => (
+                    <ReviewCard key={idx} {...review} />
+                  ))}
                 </div>
-              </div>
 
-              {/* Reviews */}
-              <div className="space-y-4">
-                {lecturer.reviews_list.map((review, idx) => (
-                  <ReviewCard key={idx} {...review} />
-                ))}
+                {lecturer.reviews_list.length > 3 && (
+                  <button
+                    onClick={() => toggleReviews(lecturer.id)}
+                    className="mt-6 text-primary font-semibold hover:underline"
+                  >
+                    {expandedLecturers[lecturer.id]
+                      ? 'Show less'
+                      : `View all ${lecturer.reviews} reviews →`}
+                  </button>
+                )}
               </div>
-
-              <button className="mt-6 text-primary font-semibold hover:underline">
-                View all {lecturer.reviews} reviews →
-              </button>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
         )}
       </div>
     </main>

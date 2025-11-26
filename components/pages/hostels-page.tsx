@@ -16,6 +16,14 @@ export default function HostelsPage({ onNavigate }: HostelsPageProps) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [ratingFilter, setRatingFilter] = useState(0);
+  const [expandedHostels, setExpandedHostels] = useState<Record<number, boolean>>({});
+
+  const toggleReviews = (hostelId: number) => {
+    setExpandedHostels((prev) => ({
+      ...prev,
+      [hostelId]: !prev[hostelId],
+    }));
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -53,7 +61,7 @@ export default function HostelsPage({ onNavigate }: HostelsPageProps) {
   }, []);
 
   const allHostels = hostels ?? [];
-  
+
   // Filter hostels based on search query
   const hostelData = allHostels.filter((hostel) => {
     const matchesSearch = (() => {
@@ -92,7 +100,7 @@ export default function HostelsPage({ onNavigate }: HostelsPageProps) {
                   className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder-muted-foreground"
                 />
               </div>
-              <button 
+              <button
                 onClick={() => onNavigate?.('add-review-hostels')}
                 className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
               >
@@ -128,42 +136,49 @@ export default function HostelsPage({ onNavigate }: HostelsPageProps) {
         ) : hostelData.length === 0 ? (
           <div className="text-muted-foreground">No hostels found.</div>
         ) : (
-        <div className="space-y-8">
-          {hostelData.map((hostel: any) => (
-            <div key={hostel.id} className="bg-card rounded-2xl p-8 border border-border hover:shadow-lg transition-shadow">
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-card-foreground mb-2">{hostel.name}</h2>
-                  <div className="flex flex-col gap-2 text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <MapPin size={16} />
-                      {hostel.location}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Users size={16} />
-                      Price: {hostel.price_range ?? 'N/A'}
+          <div className="space-y-8">
+            {hostelData.map((hostel: any) => (
+              <div key={hostel.id} className="bg-card rounded-2xl p-8 border border-border hover:shadow-lg transition-shadow">
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-card-foreground mb-2">{hostel.name}</h2>
+                    <div className="flex flex-col gap-2 text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <MapPin size={16} />
+                        {hostel.location}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users size={16} />
+                        Price: {hostel.price_range ?? 'N/A'}
+                      </div>
                     </div>
                   </div>
+                  <div className="text-right">
+                    <div className="text-3xl font-black text-secondary mb-1">{hostel.rating}</div>
+                    <RatingStars rating={hostel.rating} count={hostel.reviews} />
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-3xl font-black text-secondary mb-1">{hostel.rating}</div>
-                  <RatingStars rating={hostel.rating} count={hostel.reviews} />
+
+                {/* Reviews */}
+                <div className="space-y-4">
+                  {(expandedHostels[hostel.id] ? hostel.reviews_list : hostel.reviews_list.slice(0, 3)).map((review: any, idx: number) => (
+                    <ReviewCard key={idx} {...review} />
+                  ))}
                 </div>
-              </div>
 
-              {/* Reviews */}
-              <div className="space-y-4">
-                {hostel.reviews_list.map((review: any, idx: number) => (
-                  <ReviewCard key={idx} {...review} />
-                ))}
+                {hostel.reviews_list.length > 3 && (
+                  <button
+                    onClick={() => toggleReviews(hostel.id)}
+                    className="mt-6 text-primary font-semibold hover:underline"
+                  >
+                    {expandedHostels[hostel.id]
+                      ? 'Show less'
+                      : `View all ${hostel.reviews} reviews →`}
+                  </button>
+                )}
               </div>
-
-              <button className="mt-6 text-primary font-semibold hover:underline">
-                View all {hostel.reviews} reviews →
-              </button>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
         )}
       </div>
     </main>

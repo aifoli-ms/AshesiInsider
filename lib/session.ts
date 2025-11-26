@@ -8,6 +8,7 @@ export type SessionClaims = {
   email: string;
   firstName?: string;
   profileType?: string;
+  role?: string;
   exp: number;
 };
 

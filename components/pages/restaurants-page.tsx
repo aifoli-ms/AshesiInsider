@@ -16,6 +16,14 @@ export default function RestaurantsPage({ onNavigate }: RestaurantsPageProps) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [ratingFilter, setRatingFilter] = useState(0);
+  const [expandedRestaurants, setExpandedRestaurants] = useState<Record<number, boolean>>({});
+
+  const toggleReviews = (restaurantId: number) => {
+    setExpandedRestaurants((prev) => ({
+      ...prev,
+      [restaurantId]: !prev[restaurantId],
+    }));
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -54,7 +62,7 @@ export default function RestaurantsPage({ onNavigate }: RestaurantsPageProps) {
   }, []);
 
   const allRestaurants = restaurants ?? [];
-  
+
   // Filter restaurants based on search query
   const restaurantData = allRestaurants.filter((restaurant) => {
     const matchesSearch = (() => {
@@ -92,7 +100,7 @@ export default function RestaurantsPage({ onNavigate }: RestaurantsPageProps) {
                   className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder-muted-foreground"
                 />
               </div>
-              <button 
+              <button
                 onClick={() => onNavigate?.('add-review-restaurants')}
                 className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
               >
@@ -128,43 +136,50 @@ export default function RestaurantsPage({ onNavigate }: RestaurantsPageProps) {
         ) : restaurantData.length === 0 ? (
           <div className="text-muted-foreground">No restaurants found.</div>
         ) : (
-        <div className="space-y-8">
-          {restaurantData.map((restaurant: any) => (
-            <div key={restaurant.id} className="bg-card rounded-2xl p-8 border border-border hover:shadow-lg transition-shadow">
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-card-foreground mb-2">{restaurant.name}</h2>
-                  <div className="flex flex-col gap-1 text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <MapPin size={16} />
-                      {restaurant.location}
+          <div className="space-y-8">
+            {restaurantData.map((restaurant: any) => (
+              <div key={restaurant.id} className="bg-card rounded-2xl p-8 border border-border hover:shadow-lg transition-shadow">
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-card-foreground mb-2">{restaurant.name}</h2>
+                    <div className="flex flex-col gap-1 text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <MapPin size={16} />
+                        {restaurant.location}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock size={16} />
+                        {restaurant.hours}
+                      </div>
+                      <p className="text-sm">{restaurant.cuisine}</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Clock size={16} />
-                      {restaurant.hours}
-                    </div>
-                    <p className="text-sm">{restaurant.cuisine}</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-3xl font-black text-secondary mb-1">{restaurant.rating}</div>
+                    <RatingStars rating={restaurant.rating} count={restaurant.reviews} />
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-3xl font-black text-secondary mb-1">{restaurant.rating}</div>
-                  <RatingStars rating={restaurant.rating} count={restaurant.reviews} />
+
+                {/* Reviews */}
+                <div className="space-y-4">
+                  {(expandedRestaurants[restaurant.id] ? restaurant.reviews_list : restaurant.reviews_list.slice(0, 3)).map((review: any, idx: number) => (
+                    <ReviewCard key={idx} {...review} />
+                  ))}
                 </div>
-              </div>
 
-              {/* Reviews */}
-              <div className="space-y-4">
-                {restaurant.reviews_list.map((review, idx) => (
-                  <ReviewCard key={idx} {...review} />
-                ))}
+                {restaurant.reviews_list.length > 3 && (
+                  <button
+                    onClick={() => toggleReviews(restaurant.id)}
+                    className="mt-6 text-primary font-semibold hover:underline"
+                  >
+                    {expandedRestaurants[restaurant.id]
+                      ? 'Show less'
+                      : `View all ${restaurant.reviews} reviews →`}
+                  </button>
+                )}
               </div>
-
-              <button className="mt-6 text-primary font-semibold hover:underline">
-                View all {restaurant.reviews} reviews →
-              </button>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
         )}
       </div>
     </main>

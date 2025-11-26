@@ -9,11 +9,13 @@ import RestaurantsPage from '@/components/pages/restaurants-page';
 import LecturersPage from '@/components/pages/lecturers-page';
 import HostelsPage from '@/components/pages/hostels-page';
 import AddReviewPage from '@/components/pages/add-review-page';
+import AdminDashboard from '@/components/pages/admin-dashboard';
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState('home');
   const [showSignIn, setShowSignIn] = useState(false);
   const [isAuthed, setIsAuthed] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [pendingPage, setPendingPage] = useState<string | null>(null);
   const [reviewType, setReviewType] = useState<'courses' | 'restaurants' | 'lecturers' | 'hostels'>('courses');
 
@@ -23,6 +25,10 @@ export default function Home() {
         const res = await fetch('/api/auth/session', { cache: 'no-store' });
         const authed = res.ok;
         setIsAuthed(authed);
+        if (authed) {
+          const data = await res.json();
+          setIsAdmin(data.user?.role === 'admin');
+        }
         setShowSignIn(!authed);
       } catch {
         setIsAuthed(false);
@@ -51,6 +57,10 @@ export default function Home() {
       setShowSignIn(true);
       return;
     }
+    if (page === 'admin' && !isAdmin) {
+      alert('Unauthorized');
+      return;
+    }
     setCurrentPage(page);
   };
 
@@ -74,6 +84,8 @@ export default function Home() {
             onCancel={() => handleNavigate(reviewType)}
           />
         );
+      case 'admin':
+        return isAdmin ? <AdminDashboard /> : <HomePage onNavigate={handleNavigate} />;
       default:
         return <HomePage onNavigate={handleNavigate} />;
     }
@@ -81,16 +93,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Navigation 
-        currentPage={currentPage} 
+      <Navigation
+        currentPage={currentPage}
         onNavigate={handleNavigate}
         onSignIn={() => setShowSignIn(true)}
         isAuthed={isAuthed}
+        isAdmin={isAdmin}
         onSignOut={async () => {
           try {
             await fetch('/api/auth/logout', { method: 'POST' });
           } finally {
             setIsAuthed(false);
+            setIsAdmin(false);
             setCurrentPage('home');
           }
         }}
@@ -102,6 +116,10 @@ export default function Home() {
           onSuccess={() => {
             setShowSignIn(false);
             setIsAuthed(true);
+            // Re-fetch session to get role
+            fetch('/api/auth/session').then(res => res.json()).then(data => {
+              setIsAdmin(data.user?.role === 'admin');
+            });
             if (pendingPage) {
               if (pendingPage.startsWith('add-review-')) {
                 const type = pendingPage.replace('add-review-', '') as 'courses' | 'restaurants' | 'lecturers' | 'hostels';

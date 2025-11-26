@@ -16,6 +16,14 @@ export default function CoursesPage({ onNavigate }: CoursesPageProps) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [ratingFilter, setRatingFilter] = useState(0);
+  const [expandedCourses, setExpandedCourses] = useState<Record<number, boolean>>({});
+
+  const toggleReviews = (courseId: number) => {
+    setExpandedCourses((prev) => ({
+      ...prev,
+      [courseId]: !prev[courseId],
+    }));
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -54,7 +62,7 @@ export default function CoursesPage({ onNavigate }: CoursesPageProps) {
   }, []);
 
   const allCourses = courses ?? [];
-  
+
   // Filter courses based on search query
   const courseData = allCourses.filter((course) => {
     const matchesSearch = (() => {
@@ -94,7 +102,7 @@ export default function CoursesPage({ onNavigate }: CoursesPageProps) {
                   className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder-muted-foreground"
                 />
               </div>
-              <button 
+              <button
                 onClick={() => onNavigate?.('add-review-courses')}
                 className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
               >
@@ -131,38 +139,45 @@ export default function CoursesPage({ onNavigate }: CoursesPageProps) {
         ) : courseData.length === 0 ? (
           <div className="text-muted-foreground">No courses found.</div>
         ) : (
-        <div className="space-y-8">
-          {courseData.map((course: any) => (
-            <div key={course.id} className="bg-card rounded-2xl p-8 border border-border hover:shadow-lg transition-shadow">
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="bg-primary/20 px-4 py-2 rounded-lg">
-                      <span className="text-primary font-bold">{course.code}</span>
+          <div className="space-y-8">
+            {courseData.map((course: any) => (
+              <div key={course.id} className="bg-card rounded-2xl p-8 border border-border hover:shadow-lg transition-shadow">
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="bg-primary/20 px-4 py-2 rounded-lg">
+                        <span className="text-primary font-bold">{course.code}</span>
+                      </div>
                     </div>
+                    <h2 className="text-2xl font-bold text-card-foreground">{course.name}</h2>
+                    <p className="text-muted-foreground">Instructor: {course.instructor}</p>
                   </div>
-                  <h2 className="text-2xl font-bold text-card-foreground">{course.name}</h2>
-                  <p className="text-muted-foreground">Instructor: {course.instructor}</p>
+                  <div className="text-right">
+                    <div className="text-3xl font-black text-secondary mb-1">{course.rating}</div>
+                    <RatingStars rating={course.rating} count={course.reviews} />
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-3xl font-black text-secondary mb-1">{course.rating}</div>
-                  <RatingStars rating={course.rating} count={course.reviews} />
+
+                {/* Reviews */}
+                <div className="space-y-4">
+                  {(expandedCourses[course.id] ? course.reviews_list : course.reviews_list.slice(0, 3)).map((review: any, idx: number) => (
+                    <ReviewCard key={idx} {...review} />
+                  ))}
                 </div>
-              </div>
 
-              {/* Reviews */}
-              <div className="space-y-4">
-                {course.reviews_list.map((review: any, idx: number) => (
-                  <ReviewCard key={idx} {...review} />
-                ))}
+                {course.reviews_list.length > 3 && (
+                  <button
+                    onClick={() => toggleReviews(course.id)}
+                    className="mt-6 text-primary font-semibold hover:underline"
+                  >
+                    {expandedCourses[course.id]
+                      ? 'Show less'
+                      : `View all ${course.reviews} reviews →`}
+                  </button>
+                )}
               </div>
-
-              <button className="mt-6 text-primary font-semibold hover:underline">
-                View all {course.reviews} reviews →
-              </button>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
         )}
       </div>
     </main>
