@@ -123,11 +123,23 @@ supabase/migrations/    # Database schema and seed data
 
 ## Database
 
-The app uses Supabase (PostgreSQL) with four main entity types, each with their own reviews table:
-- courses + course_reviews
-- lecturers + lecturer_reviews  
-- restaurants + restaurant_reviews
-- hostels + hostel_reviews
+The app uses Supabase (PostgreSQL) with the following tables:
+
+**Main entities:**
+
+- profiles - User accounts (id, full_name, email, avatar_url)
+- courses - Course catalog (name, rating, reviews_count)
+- lecturers - Lecturer info (name, department, courses)
+- restaurants - Restaurant listings (name, location, cuisine, hours, price_range)
+- hostels - Hostel info (name, location)
+- app_users - Application users
+
+**Review tables:**
+
+- course_reviews - (course_id, user_id, author, rating, title, content, helpful)
+- lecturer_reviews - (lecturer_id, user_id, author, rating, title, content, helpful)
+- restaurant_reviews - (restaurant_id, user_id, author, rating, title, content, helpful)
+- hostel_reviews - (hostel_id, user_id, author, rating, title, content, helpful)
 
 Ratings are automatically aggregated using PostgreSQL triggers whenever a review is added, updated, or deleted.
 
