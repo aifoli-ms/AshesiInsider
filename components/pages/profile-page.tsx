@@ -39,7 +39,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
     useEffect(() => {
         const loadData = async () => {
             try {
-                // 1. Get Session
+                
                 const sessionRes = await fetch('/api/auth/session', { cache: 'no-store' });
                 if (!sessionRes.ok) {
                     setLoading(false);
@@ -54,8 +54,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                     return;
                 }
 
-                // 2. Fetch Reviews from all tables based on author name
-                // Note: This is a fallback since we didn't store user_id previously.
+               
                 const authorName = userData.firstName || userData.email?.split('@')[0] || 'Anonymous';
 
                 const tables = [
@@ -76,7 +75,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
 
                     if (!error && data) {
                         const mapped = data.map((r: any) => {
-                            // Extract item name based on the joined table
+                            
                             let itemName = 'Unknown Item';
                             if (t.type === 'course' && r.courses) {
                                 itemName = `${r.courses.code} - ${r.courses.name}`;
@@ -102,7 +101,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                     }
                 }
 
-                // Sort all reviews by date
+                
                 allReviews.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
                 setReviews(allReviews);
             } catch (error) {
@@ -138,7 +137,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                 throw new Error(data.error || 'Failed to delete review');
             }
 
-            // Remove from local state
+            
             setReviews(prev => prev.filter(r => !(r.id === id && r.type === type)));
         } catch (error: any) {
             console.error('Error deleting review:', error);

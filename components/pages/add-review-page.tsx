@@ -74,8 +74,8 @@ export default function AddReviewPage({ reviewType, onNavigate, onCancel }: AddR
           id: item.id,
           name: item.name,
           code: item.code,
-          displayName: reviewType === 'courses' && item.code 
-            ? `${item.code} - ${item.name}` 
+          displayName: reviewType === 'courses' && item.code
+            ? `${item.code} - ${item.name}`
             : item.name,
         }));
 
@@ -100,7 +100,6 @@ export default function AddReviewPage({ reviewType, onNavigate, onCancel }: AddR
     if (!isFormValid || !selectedItem) return;
 
     try {
-      // Get current session
       const sessionRes = await fetch('/api/auth/session', { cache: 'no-store' });
       if (!sessionRes.ok) {
         alert('Please sign in to submit a review');
@@ -109,11 +108,11 @@ export default function AddReviewPage({ reviewType, onNavigate, onCancel }: AddR
 
       const sessionData = await sessionRes.json();
       const sessionUser = sessionData.user;
-      
-      // Use firstName from session, or email, or fallback to Anonymous
+
+
       const author = sessionUser?.firstName || sessionUser?.email?.split('@')[0] || 'Anonymous';
 
-      // Determine the review table name and field name
+
       const reviewTableMap = {
         courses: { table: 'course_reviews', field: 'course_id' },
         restaurants: { table: 'restaurant_reviews', field: 'restaurant_id' },
@@ -123,8 +122,7 @@ export default function AddReviewPage({ reviewType, onNavigate, onCancel }: AddR
 
       const { table: reviewTable, field: itemIdField } = reviewTableMap[reviewType];
 
-      // Insert review (triggers will automatically update aggregates)
-      // Note: user_id is left as null since we're using custom auth, not Supabase Auth
+
       if (!supabase) {
         alert('Database connection not available. Please try again later.');
         return;
@@ -198,7 +196,7 @@ export default function AddReviewPage({ reviewType, onNavigate, onCancel }: AddR
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0" align="start">
                   <Command>
-                    <CommandInput 
+                    <CommandInput
                       placeholder={labels.placeholder}
                       value={searchQuery}
                       onValueChange={setSearchQuery}
@@ -288,7 +286,7 @@ export default function AddReviewPage({ reviewType, onNavigate, onCancel }: AddR
                   size="sm"
                   className="absolute bottom-2 right-2 h-8"
                   onClick={() => {
-                    // Preview functionality - could open a modal or show preview
+
                     alert('Preview functionality coming soon!');
                   }}
                 >

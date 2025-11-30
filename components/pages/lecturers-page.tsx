@@ -71,7 +71,7 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
 
   const allLecturers = lecturers ?? [];
 
-  // Filter lecturers based on search query
+  
   const lecturerData = allLecturers.filter((lecturer) => {
     const matchesSearch = (() => {
       if (!searchQuery.trim()) return true;
@@ -104,7 +104,7 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
       if (response.ok) {
         const { count } = await response.json();
 
-        // Update liked state
+        
         const newLiked = new Set(likedReviews);
         if (isLiked) {
           newLiked.delete(reviewKey);
@@ -114,7 +114,7 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
         setLikedReviews(newLiked);
         localStorage.setItem('liked_reviews', JSON.stringify(Array.from(newLiked)));
 
-        // Update count in UI
+        
         setLecturers(prev => {
           if (!prev) return null;
           return prev.map(l => ({

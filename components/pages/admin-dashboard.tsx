@@ -168,7 +168,7 @@ export default function AdminDashboard() {
             const res = await fetch(`/api/admin/users?id=${id}&action=delete_user`, { method: 'DELETE' });
             if (res.ok) {
                 setUsers(users.filter(u => u.id !== id));
-                void fetchStats(); // Refresh stats
+                void fetchStats();
             } else {
                 alert('Failed to delete user');
             }
@@ -187,7 +187,7 @@ export default function AdminDashboard() {
             const res = await fetch(`/api/admin/reviews?id=${id}&table=${table}`, { method: 'DELETE' });
             if (res.ok) {
                 setReviews(reviews.filter(r => r.id !== id));
-                void fetchStats(); // Refresh stats
+                void fetchStats();
             } else {
                 alert('Failed to delete review');
             }
@@ -305,7 +305,7 @@ export default function AdminDashboard() {
                                                             size="icon"
                                                             className="text-red-500 hover:text-red-700 hover:bg-red-50"
                                                             onClick={() => handleDeleteUser(user.id)}
-                                                            disabled={user.role === 'admin'} // Prevent deleting admins for safety
+                                                            disabled={user.role === 'admin'}
                                                         >
                                                             <Trash2 size={18} />
                                                         </Button>

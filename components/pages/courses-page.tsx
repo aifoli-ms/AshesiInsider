@@ -72,7 +72,7 @@ export default function CoursesPage({ onNavigate }: CoursesPageProps) {
 
   const allCourses = courses ?? [];
 
-  // Filter courses based on search query
+
   const courseData = allCourses.filter((course) => {
     const matchesSearch = (() => {
       if (!searchQuery.trim()) return true;
@@ -106,7 +106,7 @@ export default function CoursesPage({ onNavigate }: CoursesPageProps) {
       if (response.ok) {
         const { count } = await response.json();
 
-        // Update liked state
+
         const newLiked = new Set(likedReviews);
         if (isLiked) {
           newLiked.delete(reviewKey);
@@ -116,7 +116,7 @@ export default function CoursesPage({ onNavigate }: CoursesPageProps) {
         setLikedReviews(newLiked);
         localStorage.setItem('liked_reviews', JSON.stringify(Array.from(newLiked)));
 
-        // Update count in UI
+
         setCourses(prev => {
           if (!prev) return null;
           return prev.map(c => ({
@@ -188,7 +188,7 @@ export default function CoursesPage({ onNavigate }: CoursesPageProps) {
           </div>
         </div>
 
-        {/* Loading / Empty / Courses Grid */}
+        {/* Courses Grid */}
         {loading ? (
           <div className="text-muted-foreground">Loading courses…</div>
         ) : courseData.length === 0 ? (
