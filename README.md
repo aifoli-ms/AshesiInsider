@@ -123,7 +123,7 @@ supabase/migrations/    # Database schema and seed data
 
 ## Database
 
-The app uses four main entity types, each with their own reviews table:
+The app uses Supabase (PostgreSQL) with four main entity types, each with their own reviews table:
 - courses + course_reviews
 - lecturers + lecturer_reviews  
 - restaurants + restaurant_reviews
@@ -134,8 +134,10 @@ Ratings are automatically aggregated using PostgreSQL triggers whenever a review
 ## Authentication
 
 - Users register with email and password
+- Passwords are hashed in the database using pgcrypto
 - Passwords must be 8+ characters with uppercase, lowercase, number, and special character
 - Sessions use JWT stored in HttpOnly cookies (1 week expiry)
+- Rate limiting: after 3 failed login attempts, you must wait 5 minutes before trying again
 - Protected pages require authentication
 
 ## Contributing
