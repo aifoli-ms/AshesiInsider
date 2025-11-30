@@ -1,3 +1,4 @@
+//Nigel Nortey
 // Session management - Create and parse JWT session tokens
 import { signJwtHS256, verifyJwtHS256 } from './jwt';
 
