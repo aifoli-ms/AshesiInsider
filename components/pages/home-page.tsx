@@ -101,7 +101,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
 						<div className="hidden md:block">
 							<Image
-								src="/placeholder.svg"
+								src="/insider.jpeg"
 								alt="Campus community illustration"
 								width={560}
 								height={420}
