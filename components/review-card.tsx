@@ -1,3 +1,4 @@
+//@Shaun Esua - Mensah
 'use client';
 
 import RatingStars from './rating-stars';
@@ -29,8 +30,8 @@ export default function ReviewCard({ author, rating, title, text, date, helpful 
       <button
         onClick={onHelpful}
         className={`flex items-center gap-2 text-xs transition-colors ${isLiked
-            ? 'text-red-500 hover:text-red-600'
-            : 'text-muted-foreground hover:text-accent'
+          ? 'text-red-500 hover:text-red-600'
+          : 'text-muted-foreground hover:text-accent'
           }`}
       >
         <ThumbsUp size={14} fill={isLiked ? "currentColor" : "none"} />

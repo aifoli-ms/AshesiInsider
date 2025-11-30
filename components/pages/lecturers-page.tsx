@@ -1,3 +1,4 @@
+//@Shaun Esua - Mensah
 'use client';
 
 import ReviewCard from '../review-card';
@@ -71,7 +72,7 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
 
   const allLecturers = lecturers ?? [];
 
-  
+
   const lecturerData = allLecturers.filter((lecturer) => {
     const matchesSearch = (() => {
       if (!searchQuery.trim()) return true;
@@ -104,7 +105,7 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
       if (response.ok) {
         const { count } = await response.json();
 
-        
+
         const newLiked = new Set(likedReviews);
         if (isLiked) {
           newLiked.delete(reviewKey);
@@ -114,7 +115,7 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
         setLikedReviews(newLiked);
         localStorage.setItem('liked_reviews', JSON.stringify(Array.from(newLiked)));
 
-        
+
         setLecturers(prev => {
           if (!prev) return null;
           return prev.map(l => ({

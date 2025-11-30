@@ -1,3 +1,4 @@
+//@Shaun Esua - Mensah
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -39,7 +40,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
     useEffect(() => {
         const loadData = async () => {
             try {
-                
+
                 const sessionRes = await fetch('/api/auth/session', { cache: 'no-store' });
                 if (!sessionRes.ok) {
                     setLoading(false);
@@ -54,7 +55,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                     return;
                 }
 
-               
+
                 const authorName = userData.firstName || userData.email?.split('@')[0] || 'Anonymous';
 
                 const tables = [
@@ -75,7 +76,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
 
                     if (!error && data) {
                         const mapped = data.map((r: any) => {
-                            
+
                             let itemName = 'Unknown Item';
                             if (t.type === 'course' && r.courses) {
                                 itemName = `${r.courses.code} - ${r.courses.name}`;
@@ -101,7 +102,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                     }
                 }
 
-                
+
                 allReviews.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
                 setReviews(allReviews);
             } catch (error) {
@@ -137,7 +138,7 @@ export default function ProfilePage({ onNavigate }: ProfilePageProps) {
                 throw new Error(data.error || 'Failed to delete review');
             }
 
-            
+
             setReviews(prev => prev.filter(r => !(r.id === id && r.type === type)));
         } catch (error: any) {
             console.error('Error deleting review:', error);

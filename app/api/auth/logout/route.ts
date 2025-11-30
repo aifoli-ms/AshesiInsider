@@ -1,3 +1,5 @@
+//@Nigel Nortey
+
 // Logout API - Clears session cookie to end user session
 import { NextResponse } from 'next/server'
 import { SESSION_COOKIE } from '@/lib/session'
