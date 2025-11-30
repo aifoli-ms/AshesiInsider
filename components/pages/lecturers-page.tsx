@@ -84,9 +84,10 @@ export default function LecturersPage({ onNavigate }: LecturersPageProps) {
     })();
 
     const matchesRating = lecturer.rating >= ratingFilter;
+    const hasReviews = lecturer.reviews > 0;
 
-    return matchesSearch && matchesRating;
-  });
+    return matchesSearch && matchesRating && hasReviews;
+  }).sort((a, b) => b.rating - a.rating);
 
   const handleHelpful = async (reviewId: number) => {
     const reviewKey = `lecturer_${reviewId}`;

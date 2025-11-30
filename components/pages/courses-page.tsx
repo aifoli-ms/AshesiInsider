@@ -86,9 +86,10 @@ export default function CoursesPage({ onNavigate }: CoursesPageProps) {
     })();
 
     const matchesRating = course.rating >= ratingFilter;
+    const hasReviews = course.reviews > 0;
 
-    return matchesSearch && matchesRating;
-  });
+    return matchesSearch && matchesRating && hasReviews;
+  }).sort((a, b) => b.rating - a.rating);
 
   const handleHelpful = async (reviewId: number) => {
     const reviewKey = `course_${reviewId}`;

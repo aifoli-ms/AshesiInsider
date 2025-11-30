@@ -85,9 +85,10 @@ export default function RestaurantsPage({ onNavigate }: RestaurantsPageProps) {
     })();
 
     const matchesRating = restaurant.rating >= ratingFilter;
+    const hasReviews = restaurant.reviews > 0;
 
-    return matchesSearch && matchesRating;
-  });
+    return matchesSearch && matchesRating && hasReviews;
+  }).sort((a, b) => b.rating - a.rating);
 
   const handleHelpful = async (reviewId: number) => {
     const reviewKey = `restaurant_${reviewId}`;
