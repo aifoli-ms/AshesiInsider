@@ -7,7 +7,7 @@ export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
     try {
-        // 1. Validate Session
+        // Validate Session
         const token = req.cookies.get(SESSION_COOKIE)?.value;
         if (!token) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
         }
 
-        // 2. Parse Body
+        // Parse Body
         const body = await req.json();
         const { reviewId, type } = body;
 
@@ -42,9 +42,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Invalid review type' }, { status: 400 });
         }
 
-        // 3. Verify Authorship
-        // We need to fetch the review to check if the current user is the author
-        // The author field in the review table stores the user's name or email prefix
+      
         const { data: review, error: fetchError } = await supabaseAdmin
             .from(tableName)
             .select('author')
@@ -57,22 +55,15 @@ export async function POST(req: NextRequest) {
 
         const userAuthorName = session.firstName || session.email.split('@')[0];
 
-        // Check if the session user matches the review author
-        // Note: This is a loose check because we don't have user_id on reviews yet.
-        // Ideally we should match exact strings.
+   
         if (review.author !== userAuthorName && review.author !== 'Anonymous') {
-            // Allow deleting 'Anonymous' reviews? Probably not, but if the logic in ProfilePage 
-            // claimed it, we should respect it. 
-            // Actually, ProfilePage fetches based on `userData.firstName || userData.email?.split('@')[0] || 'Anonymous'`
-            // So we should strictly match what the user *is* right now.
-
-            // Let's be strict:
+          
             if (review.author !== userAuthorName) {
                 return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
             }
         }
 
-        // 4. Delete Review
+        // Delete Review
         const { error: deleteError } = await supabaseAdmin
             .from(tableName)
             .delete()
