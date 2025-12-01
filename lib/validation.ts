@@ -1,3 +1,4 @@
+//Nigel Nortey
 /**
  * Validation utilities for password strength, email validation, and input sanitization
  */

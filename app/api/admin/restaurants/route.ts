@@ -1,3 +1,5 @@
+//@Divine Kwawukume
+
 import { NextResponse, type NextRequest } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { SESSION_COOKIE, parseSessionToken } from '@/lib/session';

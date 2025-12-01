@@ -1,4 +1,5 @@
 'use client';
+//@Shaun Esua - Mensah
 
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Star, Search, Eye } from 'lucide-react';

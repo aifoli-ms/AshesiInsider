@@ -1,3 +1,4 @@
+//@Shaun Esua - Mensah
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
@@ -28,15 +29,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Invalid review type' }, { status: 400 });
         }
 
-        // RPC call would be ideal for atomic increment, but for now we can fetch and update.
-        // Or better, use the .rpc() if we had a function.
-        // Since we don't have a specific RPC for this, we'll do a read-update-write or just update.
-        // Actually, we can use the `rpc` method if we create a postgres function, but let's stick to simple update for now
-        // assuming low concurrency or acceptable race conditions for "helpful" counts.
-        // Wait, Supabase/PostgREST doesn't support `increment` directly in `update` without a custom function or raw SQL.
-        // But `supabaseAdmin` is a supabase-js client.
-
-        // Let's try to fetch current first.
+  
+     
         const { data: current, error: fetchError } = await supabaseAdmin
             .from(tableName)
             .select('helpful')

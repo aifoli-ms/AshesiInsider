@@ -1,3 +1,5 @@
+//@Nigel Nortey
+
 // Session API - Validates current user session from JWT cookie
 import { NextResponse, type NextRequest } from 'next/server'
 import { SESSION_COOKIE, parseSessionToken } from '@/lib/session'

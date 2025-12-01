@@ -1,4 +1,5 @@
-// Signup API - Registers new users with validation and password hashing
+//@Nigel Nortey
+
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { supabaseServer } from '@/lib/supabaseServer'

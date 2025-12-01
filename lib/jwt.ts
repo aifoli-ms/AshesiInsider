@@ -1,4 +1,7 @@
+//Nigel Nortey
+
 // JWT utilities - Sign and verify tokens using HS256
+
 import crypto from 'crypto';
 
 type JwtPayload = Record<string, unknown>;
