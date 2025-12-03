@@ -10,23 +10,23 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: 'Ashesi Insider - Student Reviews & Discovery',
   description: 'Discover and review courses, restaurants, lecturers, and hostels at Ashesi University',
-  generator: 'v0.app',
+  generator: 'Three and a half men',
   icons: {
     icon: [
       {
-        url: '/icon-light-32x32.png',
+        url: '/insider.jpeg',
         media: '(prefers-color-scheme: light)',
       },
       {
-        url: '/icon-dark-32x32.png',
+        url: '/insider.jpeg',
         media: '(prefers-color-scheme: dark)',
       },
       {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
+        url: '/insider.jpeg',
+        type: 'image/jpeg',
       },
     ],
-    apple: '/apple-icon.png',
+    apple: '/insider.jpeg',
   },
 }
 
